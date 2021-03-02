@@ -1,0 +1,30 @@
+#!/usr/bin/python
+
+import sys
+import argparse
+
+def parseLine(l):
+    pass
+
+# https://docs.python.org/3/howto/regex.html
+
+def parseFile(filename):
+
+    with open(filename, "r") as f:
+        lines = [l for l in f]
+
+def parse_args():
+    parser = argparse
+    parser = argparse.ArgumentParser(description='Parse script')
+    parser.add_argument('-i', nargs=1, required=False, help='import file')
+    parser.add_argument('-b', action='store_true', required=False, help='option')
+
+    args = parser.parse_args()
+
+    option=bool(args.b)
+
+    if args.i is not None:
+        filename = args.i[0]
+        parseFile(filename)
+
+parse_args()

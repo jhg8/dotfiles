@@ -1,0 +1,43 @@
+#!/bin/bash
+
+usage() {
+  cat << ENDUSAGE
+Usage: $0 [-hdux] DEPLOY_DIR BACKUP_DIR
+   -h              Show help
+   -r              Restore mode
+ENDUSAGE
+1>&2;
+  exit 1;
+}
+
+DIR="dotfiles-tmp-$(date +%s|cut -c3-)"
+
+while getopts "hr" opt; do
+  case "${opt}" in
+    h )
+        usage
+        ;;
+    r )
+        restore_mode=1
+        ;;
+    * )
+        usage
+      ;;
+  esac
+done
+
+if ! rsync --version > /dev/null; then
+        echo "rsync missing";
+        exit 0;
+fi
+
+git clone https://lab.nexedi.com/jhuge/dotfiles.git $DIR
+
+if [ -n "$restore_mode" ]; then
+	$DIR/deploy -rc $HOME $HOME/dotfiles-backup
+	rm -rf $HOME/dotfiles-backup
+else
+	$DIR/deploy -p $HOME $HOME/dotfiles-backup
+fi
+
+rm -rf $DIR
