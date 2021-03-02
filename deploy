@@ -70,7 +70,7 @@ fi
 cd $DIR;
 
 if [ -n "$restore_backup" ]; then
-  file_list=$(cat dotfiles-list)
+  file_list=$(cat files-list)
   for file in $file_list; do
     file=${file%/}
     rm -rf "$deploy_dir/$file";
@@ -121,8 +121,8 @@ deploy_current_folder() {
   done
 }
 
-cd dotfiles;
-file_list="../dotfiles-list"
+cd files;
+file_list="../files-list"
 deploy_current_folder $file_list
 
 exit 0;
