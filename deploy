@@ -19,6 +19,8 @@ ENDUSAGE
 }
 
 backup_files=1
+deploy_dir=$HOME
+backup_dir=$HOME/dotfiles-backup
 
 while getopts "hcfprx" opt; do
   case "${opt}" in
@@ -48,12 +50,12 @@ done
 
 shift $((OPTIND-1))
 
-if [ $# -ne 2 ]; then
-  usage
+if [ -n "$1" ]; then
+	deploy_dir=$(readlink -f $1)
 fi
-
-deploy_dir=$(readlink -f $1)
-backup_dir=$(readlink -f $2)
+if [ -n "$2" ]; then
+	backup_dir=$(readlink -f $2)
+fi
 
 if [ -n $backup_files ] && [ -z $restore_backup ]; then
   mkdir -p $backup_dir;
