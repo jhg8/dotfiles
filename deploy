@@ -63,9 +63,15 @@ if [ -n $backup_files ] && [ -z $restore_backup ]; then
 	  echo "rsync missing";
 	  exit 0;
   fi
-  if [ -z "$force" ] && ! [ -z "$(ls -A $backup_dir)" ]; then
-    echo "Backup directory not empty, exiting...";
-    exit 1;
+
+  if ! [ -z "$(ls -A $backup_dir)" ]; then
+    if [ -n "$force" ]; then
+      rm -rf $backup_dir;
+      mkdir $backup_dir;
+    else
+      echo "Backup directory not empty, exiting...";
+      exit 1;
+    fi
   fi
 fi
 
