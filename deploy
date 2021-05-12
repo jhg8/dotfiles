@@ -57,6 +57,7 @@ if [ -n "$2" ]; then
 	backup_dir=$(readlink -f $2)
 fi
 
+# Backup
 if [ -n $backup_files ] && [ -z $restore_backup ]; then
   mkdir -p $backup_dir;
   if ! rsync --version > /dev/null; then
@@ -77,6 +78,7 @@ fi
 
 cd $DIR;
 
+# Restore backup
 if [ -n "$restore_backup" ]; then
   file_list=$(cat files-list)
   for file in $file_list; do
@@ -106,7 +108,7 @@ if [ -n "$restore_backup" ]; then
   exit 0;
 fi
 
-
+# Deploy
 deploy_current_folder() {
 
   file_list="$(cat $1)"
@@ -131,6 +133,11 @@ deploy_current_folder() {
 
 cd files;
 file_list="../files-list"
-deploy_current_folder $file_list
+deploy_current_folder $file_list;
+
+# Additional deploy
+TPM_DIR=$deploy_dir/.tmux/plugins/tpm
+rm -rf $TPM_DIR;
+git clone https://github.com/tmux-plugins/tpm $TPM_DIR;
 
 exit 0;
