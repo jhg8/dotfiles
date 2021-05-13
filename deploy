@@ -18,7 +18,6 @@ ENDUSAGE
   exit 1;
 }
 
-backup_files=1
 deploy_dir=$HOME
 backup_dir=$HOME/dotfiles-backup
 
@@ -34,7 +33,7 @@ while getopts "hcfprx" opt; do
         copy_mode=1
         ;;
     x )
-        backup_files=0
+        no_backup=0
         ;;
     r )
         restore_backup=1
@@ -58,7 +57,7 @@ if [ -n "$2" ]; then
 fi
 
 # Backup
-if [ -n $backup_files ] && [ -z $restore_backup ]; then
+if [ -z $no_backup ] && [ -z $restore_backup ]; then
   mkdir -p $backup_dir;
   if ! rsync --version > /dev/null; then
 	  echo "rsync missing";
@@ -117,7 +116,7 @@ deploy_current_folder() {
   for file in $file_list; do
     file=${file%/}
     cd $deploy_dir;
-    if [ -n $backup_files ]; then
+    if [ -z $no_backup ]; then
       rsync -aR $file $backup_dir/ 2> /dev/null;
     fi
     rm -rf $file 2> /dev/null;
