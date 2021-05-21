@@ -1,0 +1,15 @@
+.vifm/scripts/
+.vifm/colors/
+.vifm/vifmrc
+
+.vim/.skeleton.html
+.vim/.skeleton.python-parse
+.vim/.skeleton.bash
+.vim/autoload/plug.vim
+.vim/plugin/highlight.vim
+.vimrc
+
+.bashrc
+.tmux.conf
+
+.ssh/config

@@ -1,0 +1,142 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+usage() {
+  cat << ENDUSAGE
+Usage: $0 [-hdpux] DEPLOY_DIR BACKUP_DIR
+   -h              Show help
+   -x              No backup
+   -p              Copy files instead of linking
+   -r              Delete file list as specified with -d and -u options, and restore backup to deploy dir
+   -c              Clean up empty directories after restore
+   -f              Continue if backup is not empty
+   DEPLOY_DIR      Folder in which to deploy specified files
+   BACKUP_DIR      Folder in which a backup of conflicting files is made
+ENDUSAGE
+1>&2;
+  exit 1;
+}
+
+deploy_dir=$HOME
+backup_dir=$HOME/dotfiles-backup
+
+while getopts "hcfprx" opt; do
+  case "${opt}" in
+    h )
+        usage
+        ;;
+    f )
+        force=1
+        ;;
+    p )
+        copy_mode=1
+        ;;
+    x )
+        no_backup=0
+        ;;
+    r )
+        restore_backup=1
+        ;;
+    c )
+        clean_up=1
+        ;;
+    * )
+        usage
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+if [ -n "$1" ]; then
+	deploy_dir=$(readlink -f $1)
+fi
+if [ -n "$2" ]; then
+	backup_dir=$(readlink -f $2)
+fi
+
+# Backup
+if [ -z $no_backup ] && [ -z $restore_backup ]; then
+  mkdir -p $backup_dir;
+  if ! rsync --version > /dev/null; then
+	  echo "rsync missing";
+	  exit 0;
+  fi
+
+  if ! [ -z "$(ls -A $backup_dir)" ]; then
+    if [ -n "$force" ]; then
+      rm -rf $backup_dir;
+      mkdir $backup_dir;
+    else
+      echo "Backup directory not empty, exiting...";
+      exit 1;
+    fi
+  fi
+fi
+
+cd $DIR;
+
+# Restore backup
+if [ -n "$restore_backup" ]; then
+  file_list=$(cat files-list)
+  for file in $file_list; do
+    file=${file%/}
+    rm -rf "$deploy_dir/$file";
+  done
+  if [ -n "$clean_up" ]; then
+    for file in $file_list; do
+      file=${file%/}
+      prev_dir="."
+      dir=$file
+      while [[ "$dir" != "$prev_dir" ]]; do
+        rm -d $deploy_dir/$dir 2> /dev/null;
+        prev_dir=$dir
+        dir=$(dirname $dir)
+      done
+    done
+  fi
+
+  cd $backup_dir;
+  for file in $(find .); do
+    if [[ -f $file ]]; then
+      mkdir -p $deploy_dir/$(dirname $file);
+      cp -r $file $deploy_dir/$file
+    fi
+  done
+  exit 0;
+fi
+
+# Deploy
+deploy_current_folder() {
+
+  file_list="$(cat $1)"
+  FDIR=$PWD
+
+  for file in $file_list; do
+    file=${file%/}
+    cd $deploy_dir;
+    if [ -z $no_backup ]; then
+      rsync -aR $file $backup_dir/ 2> /dev/null;
+    fi
+    rm -rf $file 2> /dev/null;
+    cd $FDIR;
+    mkdir -p $deploy_dir/$(dirname $file);
+    if [ -n "$copy_mode" ]; then
+        cp -r $(realpath $file) "$deploy_dir/$file";
+    else
+        ln -s $(realpath $file) "$deploy_dir/$file";
+    fi
+  done
+}
+
+cd files;
+file_list="../files-list"
+deploy_current_folder $file_list;
+
+# Additional deploy
+TPM_DIR=$deploy_dir/.tmux/plugins/tpm
+rm -rf $TPM_DIR;
+git clone https://github.com/tmux-plugins/tpm $TPM_DIR;
+
+exit 0;
