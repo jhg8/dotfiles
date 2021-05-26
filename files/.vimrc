@@ -36,7 +36,6 @@ autocmd BufRead *.html,<&faf;HTML>
 
   Plug 'scrooloose/nerdtree'
   Plug 'rhysd/vim-clang-format'
-  Plug 'tyru/open-browser.vim'
   Plug 'kana/vim-textobj-user'
   Plug 'yuttie/comfortable-motion.vim'
   Plug 'tpope/vim-surround'
