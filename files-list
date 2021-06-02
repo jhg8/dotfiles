@@ -5,6 +5,7 @@
 .vim/autoload/plug.vim
 .vim/plugin/highlight.vim
 .vimrc
+.vicd
 
 .bashrc
 .tmux.conf

@@ -166,7 +166,7 @@ command! reload :write | restart
 " program.
 
 " Pdf
-filextype *.pdf firefox %c, zathura %c %i &, apvlv %c, xpdf %c
+filextype *.pdf chromium %c, firefox %c, zathura %c %i &, apvlv %c, xpdf %c
 fileviewer *.pdf pdftotext -nopgbrk %c -
 
 " PostScript
@@ -401,9 +401,6 @@ set vifminfo=dhistory,chistory,state,shistory,
 
 " Sample mappings
 
-" Start shell in current directory
-nnoremap s :shell<cr>
-
 " Display sorting dialog
 nnoremap S :sort<cr>
 
@@ -495,3 +492,7 @@ nnoremap <c-u> <c-w>x
 "     vifm --server-name "$VIFM_SERVER_NAME" --remote +"cd '$PWD'"
 "
 " let $VIFM_SERVER_NAME = v:servername
+
+" Start shell in current directory
+nnoremap s :q<cr>
+

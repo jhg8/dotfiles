@@ -1,0 +1,3 @@
+#!/bin/bash
+dst="$(vifm --choose-dir -)"
+cd $dst;
