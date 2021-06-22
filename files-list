@@ -1,5 +1,4 @@
 .vifm/scripts/
-.vifm/colors/
 .vifm/vifmrc
 
 .vim/autoload/plug.vim
