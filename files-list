@@ -8,3 +8,5 @@
 
 .bashrc
 .tmux.conf
+
+.oh-my-zsh/themes/agnoster.zsh-theme
